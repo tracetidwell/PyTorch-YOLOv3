@@ -1,0 +1,4 @@
+classes=1
+train=data/rebar/train.txt
+valid=data/rebar/valid.txt
+names=data/rebar/classes.names

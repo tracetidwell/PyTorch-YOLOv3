@@ -36,6 +36,7 @@ if __name__ == "__main__":
     parser.add_argument("--evaluation_interval", type=int, default=1, help="interval evaluations on validation set")
     parser.add_argument("--compute_map", default=False, help="if True computes mAP every tenth batch")
     parser.add_argument("--multiscale_training", default=True, help="allow for multi-scale training")
+    parser.add_argument("--transfer", default=False, help="use transfer learning")
     opt = parser.parse_args()
     print(opt)
 
@@ -62,6 +63,16 @@ if __name__ == "__main__":
             model.load_state_dict(torch.load(opt.pretrained_weights))
         else:
             model.load_darknet_weights(opt.pretrained_weights)
+
+    if opt.transfer:
+        yolo_input = (len(class_names) + 5) * 3
+        for p in model.parameters():
+            if p.shape[0] == yolo_input:
+                p.requires_grad = True
+            else:
+                p.requires_grad = False
+
+
 
     # Get dataloader
     dataset = ListDataset(train_path, augment=True, multiscale=opt.multiscale_training)
